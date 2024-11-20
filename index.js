@@ -18,6 +18,9 @@ const loadEmoticons = () => {
   return JSON.parse(data);
 };
 
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/public/index.html");
+  });
 // GET: Fetch all memes
 app.get('/api/data', (req, res) => {
   try {
@@ -25,10 +28,21 @@ app.get('/api/data', (req, res) => {
     res.json(memes);
   } catch (err) {
     console.error('Error reading file:', err);
-    res.status(500).json({ error: 'Failed to read meme.json' });
+    res.status(500).json({ error: 'Failed to read Data.json' });
   }
 });
-
+// GET: Fetch all types
+app.get('/api/data/types', (req, res) => {
+    try {
+      const memes = loadEmoticons();
+      const types = Object.keys(memes); // Extract the keys (types)
+      res.json(types);
+    } catch (err) {
+      console.error('Error reading file:', err);
+      res.status(500).json({ error: 'Failed to retrieve types' });
+    }
+  });
+  
 app.get('/api/data/type/:type', (req, res) => {
   try {
     const memes = loadEmoticons();
@@ -36,7 +50,7 @@ app.get('/api/data/type/:type', (req, res) => {
     const memesOfType = memes[type];
 
     if (!memesOfType) {
-      return res.status(404).json({ error: 'Meme type not found' });
+      return res.status(404).json({ error: 'Data type not found' });
     }
 
     res.json(memesOfType);
